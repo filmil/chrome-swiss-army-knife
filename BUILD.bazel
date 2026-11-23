@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #   bazel build //:zip --//:version=2026.10.23
-# builds bazel-bin/tab-shortcuts-2026.10.23.zip, the extension as the release
+# builds bazel-bin/swiss-army-knife-2026.10.23.zip, the extension as the release
 # publishes it. The same source and version make the same zip, byte for
 # byte: the files are in a fixed order with fixed times.
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
@@ -42,13 +42,22 @@ pkg_zip(
         ":files",
         ":manifest_file",
     ],
-    package_file_name = "tab-shortcuts-{version}.zip",
+    package_file_name = "swiss-army-knife-{version}.zip",
     package_variables = ":variables",
 )
 
 node_test(
     name = "unit_test",
-    srcs = ["test/lib.test.mjs"],
+    # Every unit test; the others have their own targets, and e2e needs
+    # Chrome.
+    srcs = glob(
+        ["test/*.test.mjs"],
+        exclude = [
+            "test/built_manifest.test.mjs",
+            "test/e2e.test.mjs",
+            "test/manifest.test.mjs",
+        ],
+    ),
     data = ["//extension:srcs"],
 )
 

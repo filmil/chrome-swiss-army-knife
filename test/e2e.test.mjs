@@ -5,6 +5,7 @@
 // which a test cannot press. Then it checks which tabs are left, and
 // which are pinned.
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
 import { after, before, beforeEach, test } from "node:test";
@@ -16,6 +17,8 @@ import puppeteer from "puppeteer";
 const extensionDir = process.env.E2E_EXTENSION_DIR
   ? resolve(process.env.E2E_EXTENSION_DIR)
   : fileURLToPath(new URL("../extension", import.meta.url));
+
+const manifest = JSON.parse(readFileSync(resolve(extensionDir, "manifest.json"), "utf8"));
 
 let browser, server, extension, worker, base;
 
@@ -36,7 +39,7 @@ before(async () => {
   });
   const id = await browser.installExtension(extensionDir);
   extension = (await browser.extensions()).get(id);
-  assert.equal(extension?.name, "filmil's Tab Shortcuts");
+  assert.equal(extension?.name, "filmil's Swiss Army Knife");
   const target = await browser.waitForTarget(
     (t) => t.type() === "service_worker" && t.url().startsWith(`chrome-extension://${id}/`));
   worker = await target.worker();
@@ -109,28 +112,28 @@ async function until(check, what) {
 }
 
 test("close tabs to the left keeps pinned tabs", { timeout: 60_000 }, async () => {
-  await press(5, "close-left");
+  await press(5, "tabs-close-left");
   await until(async () => (await open()).length === 4, "the tabs to close");
   assert.deepEqual(await open(), [1, 2, 5, 6]);
 });
 
 test("close tabs to the right", { timeout: 60_000 }, async () => {
-  await press(4, "close-right");
+  await press(4, "tabs-close-right");
   await until(async () => (await open()).length === 4, "the tabs to close");
   assert.deepEqual(await open(), [1, 2, 3, 4]);
 });
 
 test("close other tabs keeps the active and the pinned tabs", { timeout: 60_000 }, async () => {
-  await press(3, "close-others");
+  await press(3, "tabs-close-others");
   await until(async () => (await open()).length === 3, "the tabs to close");
   assert.deepEqual(await open(), [1, 2, 3]);
 });
 
 test("pin and unpin the tab", { timeout: 60_000 }, async () => {
-  await press(6, "toggle-pin");
+  await press(6, "tabs-toggle-pin");
   await pages[5].bringToFront();
   await until(async () => (await activeTab()).pinned, "the tab to be pinned");
-  await press(6, "toggle-pin");
+  await press(6, "tabs-toggle-pin");
   await pages[5].bringToFront();
   await until(async () => !(await activeTab()).pinned, "the tab to be unpinned");
   assert.deepEqual(await open(), [1, 2, 3, 4, 5, 6]);
@@ -141,10 +144,17 @@ test("the popup shows the default keys", { timeout: 60_000 }, async () => {
   const opened = browser.waitForTarget((t) => t.url().endsWith("/popup.html"));
   await pages[0].triggerExtensionAction(extension);
   const popup = await (await opened).asPage();
-  await popup.waitForFunction(() =>
-    [...document.querySelectorAll("kbd")].every((k) => k.textContent !== ""));
+  await popup.waitForFunction(() => {
+    const ks = [...document.querySelectorAll("kbd")];
+    return ks.length > 0 && ks.every((k) => k.textContent !== "");
+  });
   const keys = await popup.$$eval("kbd", (ks) => ks.map((k) => k.textContent));
   assert.equal(keys.length, 4);
+  // The popup has a button for every command in the manifest, in order.
+  const shown = await popup.$$eval("[data-command]", (bs) => bs.map((b) => b.dataset.command));
+  assert.deepEqual(shown, Object.keys(manifest.commands));
+  const tools = await popup.$$eval("[data-tool]", (ss) => ss.map((s) => s.dataset.tool));
+  assert.deepEqual(tools, ["tabs"]);
   for (const key of keys) assert.match(key, /Alt|not set/);
   await popup.close();
 });
