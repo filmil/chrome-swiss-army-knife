@@ -1,7 +1,7 @@
 {
-  "name": "chrome-tab-shortcuts",
+  "name": "chrome-swiss-army-knife",
   "private": true,
-  "description": "A Chrome extension with keyboard shortcuts to close and pin tabs, with no permissions.",
+  "description": "filmil's Swiss Army Knife: a Chrome extension of small tab and window tools, with no permissions.",
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {

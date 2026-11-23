@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-module(name = "chrome_tab_shortcuts")
+module(name = "chrome_swiss_army_knife")
 
 bazel_dep(name = "bazel_skylib", version = "1.9.2")
 bazel_dep(name = "rules_nodejs", version = "6.7.7")

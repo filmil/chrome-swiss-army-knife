@@ -1,17 +1,37 @@
 // SPDX-License-Identifier: Apache-2.0
-import { run } from "./actions.js";
+// Shows one section per tool, with a button per command and its keys.
+import { TOOLS } from "./tools/index.js";
+import { run } from "./registry.js";
 
 const $ = (id) => document.getElementById(id);
 
-for (const button of document.querySelectorAll("[data-command]")) {
-  button.addEventListener("click", async () => {
-    try {
-      await run(button.dataset.command);
-      window.close();
-    } catch (error) {
-      $("error").textContent = error.message;
-    }
+function element(tag, props = {}, ...children) {
+  const node = Object.assign(document.createElement(tag), props);
+  node.append(...children);
+  return node;
+}
+
+for (const tool of TOOLS) {
+  const buttons = tool.commands.map((command) => {
+    const button = element("button", { type: "button", textContent: command.title },
+      element("kbd"));
+    button.dataset.command = command.name;
+    button.addEventListener("click", async () => {
+      try {
+        await run(command.name);
+        window.close();
+      } catch (error) {
+        $("error").textContent = error.message;
+      }
+    });
+    return button;
   });
+  const section = element("section", {},
+    element("h2", { textContent: tool.title }),
+    element("div", { className: "column" }, ...buttons));
+  if (tool.note) section.append(element("p", { className: "hint", textContent: tool.note }));
+  section.dataset.tool = tool.id;
+  $("tools").append(section);
 }
 
 // Shows each command's current keys, or "not set".

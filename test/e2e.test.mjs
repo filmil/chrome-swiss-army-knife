@@ -36,7 +36,7 @@ before(async () => {
   });
   const id = await browser.installExtension(extensionDir);
   extension = (await browser.extensions()).get(id);
-  assert.equal(extension?.name, "filmil's Tab Shortcuts");
+  assert.equal(extension?.name, "filmil's Swiss Army Knife");
   const target = await browser.waitForTarget(
     (t) => t.type() === "service_worker" && t.url().startsWith(`chrome-extension://${id}/`));
   worker = await target.worker();
@@ -109,28 +109,28 @@ async function until(check, what) {
 }
 
 test("close tabs to the left keeps pinned tabs", { timeout: 60_000 }, async () => {
-  await press(5, "close-left");
+  await press(5, "tabs-close-left");
   await until(async () => (await open()).length === 4, "the tabs to close");
   assert.deepEqual(await open(), [1, 2, 5, 6]);
 });
 
 test("close tabs to the right", { timeout: 60_000 }, async () => {
-  await press(4, "close-right");
+  await press(4, "tabs-close-right");
   await until(async () => (await open()).length === 4, "the tabs to close");
   assert.deepEqual(await open(), [1, 2, 3, 4]);
 });
 
 test("close other tabs keeps the active and the pinned tabs", { timeout: 60_000 }, async () => {
-  await press(3, "close-others");
+  await press(3, "tabs-close-others");
   await until(async () => (await open()).length === 3, "the tabs to close");
   assert.deepEqual(await open(), [1, 2, 3]);
 });
 
 test("pin and unpin the tab", { timeout: 60_000 }, async () => {
-  await press(6, "toggle-pin");
+  await press(6, "tabs-toggle-pin");
   await pages[5].bringToFront();
   await until(async () => (await activeTab()).pinned, "the tab to be pinned");
-  await press(6, "toggle-pin");
+  await press(6, "tabs-toggle-pin");
   await pages[5].bringToFront();
   await until(async () => !(await activeTab()).pinned, "the tab to be unpinned");
   assert.deepEqual(await open(), [1, 2, 3, 4, 5, 6]);
@@ -145,6 +145,8 @@ test("the popup shows the default keys", { timeout: 60_000 }, async () => {
     [...document.querySelectorAll("kbd")].every((k) => k.textContent !== ""));
   const keys = await popup.$$eval("kbd", (ks) => ks.map((k) => k.textContent));
   assert.equal(keys.length, 4);
+  const tools = await popup.$$eval("[data-tool]", (ss) => ss.map((s) => s.dataset.tool));
+  assert.deepEqual(tools, ["tabs"]);
   for (const key of keys) assert.match(key, /Alt|not set/);
   await popup.close();
 });

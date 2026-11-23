@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { COMMANDS, tabsToClose } from "../extension/lib.js";
+import { tabsToClose } from "../extension/tools/tabs/lib.js";
+import tabs_tool from "../extension/tools/tabs/tool.js";
 
 // A window of six tabs, the first two pinned; the active one is in the middle.
 const tabs = [
@@ -48,6 +49,7 @@ test("nothing to close at the edges, or for other commands", () => {
   assert.deepEqual(tabsToClose("no-such-command", tabs, active), []);
 });
 
-test("the commands are the four the extension offers", () => {
-  assert.deepEqual(COMMANDS, ["close-left", "close-right", "close-others", "toggle-pin"]);
+test("the tabs tool offers its four commands", () => {
+  assert.deepEqual(tabs_tool.commands.map((c) => c.name),
+    ["tabs-close-left", "tabs-close-right", "tabs-close-others", "tabs-toggle-pin"]);
 });

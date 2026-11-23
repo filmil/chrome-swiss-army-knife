@@ -64,8 +64,8 @@ jobs:
           bazel test //...
           bazel build //:zip --//:version="$VERSION"
           mkdir -p dist
-          cp "bazel-bin/tab-shortcuts-$VERSION.zip" dist/
-          (cd dist && sha256sum "tab-shortcuts-$VERSION.zip" > "tab-shortcuts-$VERSION.zip.sha256")
+          cp "bazel-bin/swiss-army-knife-$VERSION.zip" dist/
+          (cd dist && sha256sum "swiss-army-knife-$VERSION.zip" > "swiss-army-knife-$VERSION.zip.sha256")
       - uses: actions/setup-node@v4
         if: steps.changes.outputs.release == 'true'
         with:
@@ -80,7 +80,7 @@ jobs:
           npm ci
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           rm -rf "$RUNNER_TEMP/unzipped"
-          unzip -q "dist/tab-shortcuts-$VERSION.zip" -d "$RUNNER_TEMP/unzipped"
+          unzip -q "dist/swiss-army-knife-$VERSION.zip" -d "$RUNNER_TEMP/unzipped"
           E2E_EXTENSION_DIR="$RUNNER_TEMP/unzipped" npm run test:e2e
       - name: Publish
         if: steps.changes.outputs.release == 'true'
@@ -90,11 +90,11 @@ jobs:
           LAST: ${{ steps.changes.outputs.last }}
         run: |
           {
-            echo "Install: download tab-shortcuts-$VERSION.zip, unzip it, open"
+            echo "Install: download swiss-army-knife-$VERSION.zip, unzip it, open"
             echo "chrome://extensions, turn on Developer mode, and choose"
             echo "Load unpacked on the unzipped folder."
             echo
-            echo "SHA-256: \`$(cut -d' ' -f1 "dist/tab-shortcuts-$VERSION.zip.sha256")\`"
+            echo "SHA-256: \`$(cut -d' ' -f1 "dist/swiss-army-knife-$VERSION.zip.sha256")\`"
             echo
             if [ -n "$LAST" ]; then
               echo "Changes since $LAST:"
@@ -102,4 +102,4 @@ jobs:
             fi
           } > notes.md
           gh release create "v$VERSION" dist/* \
-            --target "$GITHUB_SHA" --title "filmil's Tab Shortcuts $VERSION" --notes-file notes.md
+            --target "$GITHUB_SHA" --title "filmil's Swiss Army Knife $VERSION" --notes-file notes.md

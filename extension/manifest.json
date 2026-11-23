@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "filmil's Tab Shortcuts",
+  "name": "filmil's Swiss Army Knife",
   "version": "0.1.0",
-  "description": "Keyboard shortcuts to close tabs to the left, to the right, or all others, and to pin a tab. No permissions, no network.",
+  "description": "Small tools for tabs and windows, starting with keyboard shortcuts to close and pin tabs. No permissions, no network.",
   "minimum_chrome_version": "120",
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "action": {
-    "default_title": "filmil's Tab Shortcuts",
+    "default_title": "filmil's Swiss Army Knife",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -19,20 +19,28 @@
     }
   },
   "commands": {
-    "close-left": {
-      "suggested_key": { "default": "Alt+Shift+Comma" },
+    "tabs-close-left": {
+      "suggested_key": {
+        "default": "Alt+Shift+Comma"
+      },
       "description": "Close the tabs to the left"
     },
-    "close-right": {
-      "suggested_key": { "default": "Alt+Shift+Period" },
+    "tabs-close-right": {
+      "suggested_key": {
+        "default": "Alt+Shift+Period"
+      },
       "description": "Close the tabs to the right"
     },
-    "close-others": {
-      "suggested_key": { "default": "Alt+Shift+O" },
+    "tabs-close-others": {
+      "suggested_key": {
+        "default": "Alt+Shift+O"
+      },
       "description": "Close the other tabs"
     },
-    "toggle-pin": {
-      "suggested_key": { "default": "Alt+Shift+P" },
+    "tabs-toggle-pin": {
+      "suggested_key": {
+        "default": "Alt+Shift+P"
+      },
       "description": "Pin or unpin the tab"
     }
   },
