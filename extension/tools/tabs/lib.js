@@ -8,11 +8,13 @@
 // are the ones a person keeps on purpose.
 export function tabsToClose(action, tabs, active) {
   const keep = (tab) => tab.id === active.id || tab.pinned;
-  const pick = {
+  const picks = {
     "close-left": (tab) => tab.index < active.index,
     "close-right": (tab) => tab.index > active.index,
     "close-others": () => true,
-  }[action];
-  if (!pick) return [];
+  };
+  // Own keys only: "toString" or "constructor" must not pick anything.
+  if (!Object.hasOwn(picks, action)) return [];
+  const pick = picks[action];
   return tabs.filter((tab) => !keep(tab) && pick(tab)).map((tab) => tab.id);
 }

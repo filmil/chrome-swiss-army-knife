@@ -28,6 +28,12 @@ test("the manifest asks for exactly the permissions the tools declare", () => {
   }
 });
 
+test("the description claims no permissions only while there are none", () => {
+  const claims = /no permissions/i.test(manifest.description);
+  assert.equal(claims, manifest.permissions === undefined,
+    "update the description (and the README) when the permissions change");
+});
+
 test("no code reaches the network or evaluates strings", () => {
   assert.ok(files.some(([f]) => /\.js$/.test(f)) && files.some(([f]) => /\.css$/.test(f)));
   for (const [file, text] of files) {
@@ -44,11 +50,9 @@ test("no code reaches the network or evaluates strings", () => {
 
 test("no code reads tab addresses, titles or page content", () => {
   for (const [file, text] of files.filter(([f]) => /\.m?js$/.test(f))) {
-    // The tools' and commands' own titles are the popup's labels, not tabs'.
-    const code = text.replace(/\b(?:tool|command)\.title\b/g, "");
     for (const pattern of [/\.url\b/, /\.title\b/, /\.favIconUrl\b/, /chrome\.scripting/,
       /executeScript/, /chrome\.storage/, /chrome\.history/, /chrome\.cookies/]) {
-      assert.doesNotMatch(code, pattern, `${file} matches ${pattern}`);
+      assert.doesNotMatch(text, pattern, `${file} matches ${pattern}`);
     }
   }
 });

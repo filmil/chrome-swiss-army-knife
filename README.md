@@ -105,15 +105,16 @@ A tool is a folder in [`extension/tools/`](extension/tools/) with a
 
 ```js
 export default {
-  id: "windows",              // lowercase; every command name starts with it
-  title: "Windows",           // the popup section's heading
+  id: "windows",              // a-z and 0-9, starting with a letter;
+                              // every command name starts with it
+  label: "Windows",           // the popup section's heading
   note: "Optional hint.",     // shown under the buttons
   permissions: [],            // the Chrome permissions this tool needs
   commands: [
     {
       name: "windows-merge",  // "<id>-...", also the manifest's command name
-      title: "Merge all windows",
-      run: async (tab) => { /* act from the active tab */ },
+      label: "Merge all windows",
+      run: async (tab) => { /* tab.windowId is its window */ },
     },
   ],
 };
@@ -130,9 +131,19 @@ Then:
    set one at `chrome://extensions/shortcuts`.
 3. If the tool needs a permission, list it in both the tool's
    `permissions` and the manifest's `permissions`, and say why in the
-   tool's comment and in this README.
-4. Put pure logic in the tool's own `lib.js` and unit-test it in
-   `test/`, as [`tools/tabs/lib.js`](extension/tools/tabs/lib.js) does.
+   tool's comment and in this README. Then drop "No permissions" from
+   the manifest's description and from this README: a test fails while
+   the description claims none and the manifest has some.
+4. Put pure logic in the tool's own `lib.js`, and unit-test it in a
+   `test/<id>.test.mjs`, as [`test/tabs.test.mjs`](test/tabs.test.mjs)
+   does for [`tools/tabs/lib.js`](extension/tools/tabs/lib.js).
+   `bazel test //:unit_test` runs every `test/*.test.mjs` except the
+   manifest and end-to-end tests.
+
+`run` gets the tab the command acts from: the active tab of the window
+where the shortcut was pressed or the popup was opened. A window-level
+tool uses its `windowId`. When there is no such tab, for example in a
+DevTools window, the command does nothing.
 
 `bazel test //...` checks that every tool is well formed, that command
 names are unique, that the manifest and the tools agree, and that no

@@ -47,6 +47,8 @@ test("nothing to close at the edges, or for other commands", () => {
   assert.deepEqual(tabsToClose("close-right", tabs, tabs[5]), []);
   assert.deepEqual(tabsToClose("toggle-pin", tabs, active), []);
   assert.deepEqual(tabsToClose("no-such-command", tabs, active), []);
+  assert.deepEqual(tabsToClose("toString", tabs, active), []);
+  assert.deepEqual(tabsToClose("constructor", tabs, active), []);
 });
 
 test("the tabs tool offers its four commands", () => {

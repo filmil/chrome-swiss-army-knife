@@ -13,7 +13,7 @@ function element(tag, props = {}, ...children) {
 
 for (const tool of TOOLS) {
   const buttons = tool.commands.map((command) => {
-    const button = element("button", { type: "button", textContent: command.title },
+    const button = element("button", { type: "button", textContent: command.label },
       element("kbd"));
     button.dataset.command = command.name;
     button.addEventListener("click", async () => {
@@ -27,7 +27,7 @@ for (const tool of TOOLS) {
     return button;
   });
   const section = element("section", {},
-    element("h2", { textContent: tool.title }),
+    element("h2", { textContent: tool.label }),
     element("div", { className: "column" }, ...buttons));
   if (tool.note) section.append(element("p", { className: "hint", textContent: tool.note }));
   section.dataset.tool = tool.id;

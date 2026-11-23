@@ -15,28 +15,28 @@ async function close(action, tab) {
 
 export default {
   id: "tabs",
-  title: "Tabs",
+  label: "Tabs",
   note: "Pinned tabs are never closed.",
   permissions: [],
   commands: [
     {
       name: "tabs-close-left",
-      title: "Close tabs to the left",
+      label: "Close tabs to the left",
       run: (tab) => close("close-left", tab),
     },
     {
       name: "tabs-close-right",
-      title: "Close tabs to the right",
+      label: "Close tabs to the right",
       run: (tab) => close("close-right", tab),
     },
     {
       name: "tabs-close-others",
-      title: "Close other tabs",
+      label: "Close other tabs",
       run: (tab) => close("close-others", tab),
     },
     {
       name: "tabs-toggle-pin",
-      title: "Pin or unpin this tab",
+      label: "Pin or unpin this tab",
       run: (tab) => chrome.tabs.update(tab.id, { pinned: !tab.pinned }),
     },
   ],

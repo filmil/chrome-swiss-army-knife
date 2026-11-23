@@ -48,10 +48,16 @@ pkg_zip(
 
 node_test(
     name = "unit_test",
-    srcs = [
-        "test/registry.test.mjs",
-        "test/tabs.test.mjs",
-    ],
+    # Every unit test; the others have their own targets, and e2e needs
+    # Chrome.
+    srcs = glob(
+        ["test/*.test.mjs"],
+        exclude = [
+            "test/built_manifest.test.mjs",
+            "test/e2e.test.mjs",
+            "test/manifest.test.mjs",
+        ],
+    ),
     data = ["//extension:srcs"],
 )
 
